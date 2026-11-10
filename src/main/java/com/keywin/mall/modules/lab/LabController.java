@@ -25,6 +25,4 @@ public class LabController {
     public Result<Void> exception() {
         throw new RuntimeException("runtime exception");
     }
-
-
 }
