@@ -2,9 +2,10 @@
 
 配合 `mall-product` 后端使用的本地联调前端，基于 Vue 3 + Vite。
 
-三个工作区：
+四个工作区：
 
 - **商品验收**：新增商品、按 ID 查询详情，展示字段脱敏、状态文案以及完整的统一响应。
+- **商品管理**：分页查询商品，按行修改或删除，操作后自动刷新列表。
 - **接口调试**：自由组合 method / path / query / JSON body，作为后续接口的通用测试台。
 - **异常演练**：一次跑完参数校验失败、业务异常、接口 404、系统 500，并对照预期判断是否通过。
 
@@ -72,6 +73,7 @@ frond-end/
     │   └── StatusStamp.vue
     └── views/
         ├── ProductView.vue
+        ├── ProductManageView.vue
         ├── DebugView.vue
         └── ErrorLabView.vue
 ```

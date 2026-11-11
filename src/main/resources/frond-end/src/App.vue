@@ -4,6 +4,7 @@ import { endpointGroups } from './api/endpoints.js'
 import { loadEndpoint, switchView, workspace } from './stores/workspace.js'
 import DebugView from './views/DebugView.vue'
 import ErrorLabView from './views/ErrorLabView.vue'
+import ProductManageView from './views/ProductManageView.vue'
 import ProductView from './views/ProductView.vue'
 
 const views = [
@@ -13,6 +14,13 @@ const views = [
     title: '商品验收',
     caption: '实际提交表单并读取详情，核对新增结果、字段脱敏与参数校验的真实表现。',
     component: ProductView,
+  },
+  {
+    key: 'product-manage',
+    label: '商品管理',
+    title: '商品管理',
+    caption: '分页查询商品，按行修改或删除，核对 PageResult 结构与写操作的业务码。',
+    component: ProductManageView,
   },
   {
     key: 'debug',
