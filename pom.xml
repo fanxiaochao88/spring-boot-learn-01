@@ -65,6 +65,15 @@
     </dependencies>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <excludes>
+                    <!-- 前端源码由 Vite 独立管理，避免 node_modules 被打进 jar -->
+                    <exclude>frond-end/**</exclude>
+                </excludes>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>

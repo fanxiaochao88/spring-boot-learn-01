@@ -18,6 +18,7 @@ public class Product {
     private String name;
     private BigDecimal price;
     private Integer stock;
+    private Integer status;
     private String contactPhone; // 联系电话
     private String description; // 描述
 

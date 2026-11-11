@@ -1,5 +1,6 @@
 package com.keywin.mall.modules.product.dto;
 
+import com.keywin.mall.common.validation.Phone;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
@@ -21,6 +22,7 @@ public class ProductCreateDTO {
     @Min(value = 0, message = "商品库存不能小于0")
     private Integer stock;
 
+    @Phone
     private String contactPhone;
 
     @Size(max = 100, message = "商品描述长度不能超过100个字符")
