@@ -31,6 +31,32 @@ const scenarios = [
     note: '走 ProductServiceImpl.getById 的空结果分支，抛出 PRODUCT_NOT_FOUND。',
   },
   {
+    id: 'stock-decrease-validation',
+    title: '扣减参数校验失败',
+    method: 'POST',
+    path: '/api/product/1/stock/decrease',
+    body: {
+      count: 0,
+      reason: '',
+    },
+    expectedHttp: 400,
+    expectedCode: 40000,
+    note: 'count 违反 @Min(1)，空 reason 违反 @Size(min=1)；确认两个字段的错误都会拼接进 message。',
+  },
+  {
+    id: 'stock-product-not-found',
+    title: '扣减不存在的商品',
+    method: 'POST',
+    path: '/api/product/999999/stock/decrease',
+    body: {
+      count: 1,
+      reason: '验收扣减',
+    },
+    expectedHttp: 400,
+    expectedCode: 10001,
+    note: 'StockLogServiceImpl 先查商品，空结果抛 PRODUCT_NOT_FOUND，不会写 product_stock_log。',
+  },
+  {
     id: 'business',
     title: '业务异常',
     method: 'GET',

@@ -2,12 +2,13 @@
 
 配合 `mall-product` 后端使用的本地联调前端，基于 Vue 3 + Vite。
 
-四个工作区：
+五个工作区：
 
 - **商品验收**：新增商品、按 ID 查询详情，展示字段脱敏、状态文案以及完整的统一响应。
 - **商品管理**：分页查询商品，按行修改或删除，操作后自动刷新列表。
+- **库存验收**：查询商品库存、提交扣减，自动刷新并记录本次会话的扣减前后数量。
 - **接口调试**：自由组合 method / path / query / JSON body，作为后续接口的通用测试台。
-- **异常演练**：一次跑完参数校验失败、业务异常、接口 404、系统 500，并对照预期判断是否通过。
+- **异常演练**：一次跑完参数校验失败、业务异常、接口 404、系统 500 与库存扣减异常，并对照预期判断是否通过。
 
 ## 启动
 
@@ -54,6 +55,30 @@ VITE_API_TARGET=http://192.168.1.20:8089 npm run dev
 
 `path` 里的 `{id}` 会自动生成路径参数输入框，`body` 会自动格式化成 JSON 文本。
 
+## 库存扣减与流水
+
+接口：`POST /api/product/{id}/stock/decrease`
+
+```json
+{ "count": 1, "reason": "验收扣减" }
+```
+
+- `count`：1–100，必填；`reason`：≤ 100 字，可空（前端留空时发送 `null`，而不是空字符串）。
+- 成功返回 `Result<Void>`（`data` 为 `null`），商品库存减少并写入 `product_stock_log`。
+- 业务码：商品不存在 `10001`、库存不足 `10002`、商品已下架 `10003`，均为 HTTP 400。
+- 「库存验收」工作区会自动刷新详情，并记录**本次页面会话**的扣减前后数量。
+
+后端目前没有暴露流水查询接口，页面无法直接读取 `product_stock_log`。完整流水请到 MySQL 核对：
+
+```sql
+SELECT id, product_id, change_amount, before_stock, after_stock, reason, create_time
+FROM product_stock_log
+WHERE product_id = 1
+ORDER BY id DESC;
+```
+
+扣减失败时不会写流水，事务回滚后库存也不会变化。
+
 ## 目录结构
 
 ```text
@@ -74,6 +99,7 @@ frond-end/
     └── views/
         ├── ProductView.vue
         ├── ProductManageView.vue
+        ├── StockView.vue
         ├── DebugView.vue
         └── ErrorLabView.vue
 ```

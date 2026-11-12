@@ -87,6 +87,18 @@ export const endpointGroups = [
         summary: '按 ID 逻辑删除商品；成功时 data 为空，再次查询详情会返回 10001。',
         pathParams: { id: '1' },
       },
+      {
+        id: 'product-stock-decrease',
+        name: '扣减库存',
+        method: 'POST',
+        path: '/api/product/{id}/stock/decrease',
+        summary: '扣减库存并写入 product_stock_log 流水；count 1–100，库存不足返回 10002。',
+        pathParams: { id: '1' },
+        body: {
+          count: 1,
+          reason: '验收扣减',
+        },
+      },
     ],
   },
   {

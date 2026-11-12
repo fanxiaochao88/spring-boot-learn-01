@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "mall.product")
 public class ProductProperties {
+
     // 单页最大条数, 防止击穿数据库
     private int pageSizeLimit = 100;
     // 库存预警

@@ -121,6 +121,7 @@ public class ProductServiceImpl implements ProductService {
         // 不能直接使用 product.getStatus() == 1, 因为 status 是 Integer 类型
         productVO.setStatusText(Integer.valueOf(1).equals(product.getStatus()) ? "上架" : "下架");
         productVO.setContactPhone(maskPhone(product.getContactPhone()));
+        productVO.setStockWarning(product.getStock() <= productProperties.getLowStockThreshold());
         return productVO;
     }
     private String maskPhone(String phone) {

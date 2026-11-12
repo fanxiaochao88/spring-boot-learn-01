@@ -6,6 +6,7 @@ import DebugView from './views/DebugView.vue'
 import ErrorLabView from './views/ErrorLabView.vue'
 import ProductManageView from './views/ProductManageView.vue'
 import ProductView from './views/ProductView.vue'
+import StockView from './views/StockView.vue'
 
 const views = [
   {
@@ -21,6 +22,13 @@ const views = [
     title: '商品管理',
     caption: '分页查询商品，按行修改或删除，核对 PageResult 结构与写操作的业务码。',
     component: ProductManageView,
+  },
+  {
+    key: 'stock',
+    label: '库存验收',
+    title: '库存验收',
+    caption: '查询商品库存、提交扣减，核对扣减前后数量与本次会话记录。',
+    component: StockView,
   },
   {
     key: 'debug',

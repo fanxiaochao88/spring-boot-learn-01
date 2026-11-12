@@ -5,7 +5,9 @@ import com.keywin.mall.common.api.Result;
 import com.keywin.mall.modules.product.dto.ProductCreateDTO;
 import com.keywin.mall.modules.product.dto.ProductQueryDTO;
 import com.keywin.mall.modules.product.dto.ProductUpdateDTO;
+import com.keywin.mall.modules.product.dto.StockDecreaseDTO;
 import com.keywin.mall.modules.product.service.ProductService;
+import com.keywin.mall.modules.product.service.StockLogService;
 import com.keywin.mall.modules.product.vo.ProductVO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
+    private final StockLogService stockLogService;
 
     /**
      * 创建商品
@@ -61,6 +64,16 @@ public class ProductController {
     @DeleteMapping("/{id}")
     public Result<Void> delete(@PathVariable Long id) {
         productService.delete(id);
+        return Result.success();
+    }
+
+    /**
+     * 扣减库存
+     */
+    @PostMapping("/{id}/stock/decrease")
+    public Result<Void> decreaseStock(@PathVariable Long id,
+                                      @Valid @RequestBody StockDecreaseDTO stockDecreaseDTO) {
+        stockLogService.decrease(id, stockDecreaseDTO.getCount(), stockDecreaseDTO.getReason());
         return Result.success();
     }
 }
