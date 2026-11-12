@@ -43,6 +43,7 @@ public class GlobalExceptionHandler {
     /**
      * 处理404, 避免被全局异常处理器捕获
      */
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoResourceFoundException.class)
     public Result<Void> handleNotFoundException(NoResourceFoundException e) {
         log.warn("404异常: message = {}", e.getMessage());
@@ -55,6 +56,7 @@ public class GlobalExceptionHandler {
      * @return
      */
     @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Result<Void> handleException(Exception e) {
         log.error("系统异常: message = {}", e.getMessage(), e);
         return Result.fail(ResultCode.INTERNAL_ERROR);

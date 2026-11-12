@@ -31,5 +31,5 @@
     </root>
 
     <!-- 自己的包可以开 DEBUG -->
-    <logger name="com.example.mall" level="DEBUG"/>
+    <logger name="com.keywin.mall" level="DEBUG"/>
 </configuration>
