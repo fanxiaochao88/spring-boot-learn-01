@@ -1,7 +1,9 @@
 package com.keywin.mall.common.exception;
 
 import com.keywin.mall.common.api.ResultCode;
+import lombok.Getter;
 
+@Getter
 public class UnauthorizedException extends RuntimeException{
     private final int code;
 

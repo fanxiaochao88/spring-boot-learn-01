@@ -50,6 +50,13 @@ public class GlobalExceptionHandler {
         return Result.fail(ResultCode.NOT_FOUND);
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public Result<Void> handleUnauthorizedException(UnauthorizedException e) {
+        log.warn("登录认证异常: message = {}", e.getMessage());
+        return Result.fail(e.getCode(), e.getMessage());
+    }
+
     /**
      * 处理系统异常, 作为兜底的异常处理
      * @param e

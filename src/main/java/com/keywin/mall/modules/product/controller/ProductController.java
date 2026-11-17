@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("api/product")
+@RequestMapping("api/admin/product")
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
