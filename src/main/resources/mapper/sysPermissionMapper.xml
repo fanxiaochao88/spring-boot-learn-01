@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace = 接口的全限定符 -->
+<mapper namespace="com.keywin.mall.modules.system.mapper.SysPermissionMapper">
+    <!--  -->
+    <select id="selectPermissionCodeByUserId" resultType="String">
+        select distinct p.code as permissionCode
+        from sys_permission p
+        join sys_role_permission rp on rp.permission_id = p.id
+        join sys_user_role ur on ur.role_id = rp.role_id
+        join sys_role r on  r.id = ur.role_id
+        where ur.user_id = #{userId}
+        and r.status = 1 and r.deleted = 0
+        and p.status = 1 and p.deleted = 0
+    </select>
+    <select id="selectRoleCodeByUserId" resultType="java.lang.String">
+        select distinct r.code as roleCode
+        from sys_role r
+        join sys_user_role ur on ur.role_id = r.id
+        where ur.user_id = #{userId}
+        and r.status = 1 and r.deleted = 0
+    </select>
+    <select id="selectPermissionCodeByRoleId" resultType="java.lang.String">
+        select distinct p.code as permissionCode
+        from sys_permission p
+        join sys_role_permission rp on rp.permission_id = p.id
+        where rp.role_id = #{roleId}
+        and p.status = 1 and p.deleted = 0
+    </select>
+    <resultMap id="rolePermissionMap" type="com.keywin.mall.modules.system.vo.SysRoleVO">
+        <id     property="id"          column="role_id"/>
+        <result property="name"        column="role_name"/>
+        <result property="code"        column="role_code"/>
+        <result property="description" column="role_description"/>
+        <result property="status"      column="role_status"/>
+        <result property="createTime"  column="role_create_time"/>
+        <result property="updateTime"  column="role_update_time"/>
+
+        <collection property="permissionList" ofType="com.keywin.mall.modules.system.vo.SysPermissionVO">
+            <id     property="id"          column="perm_id"/>
+            <result property="name"        column="perm_name"/>
+            <result property="code"        column="perm_code"/>
+            <result property="module"      column="perm_module"/>
+            <result property="description" column="perm_description"/>
+            <result property="status"      column="perm_status"/>
+            <result property="createTime"  column="perm_create_time"/>
+            <result property="updateTime"  column="perm_update_time"/>
+        </collection>
+    </resultMap>
+    <select id="selectRolePermissionByUserId" resultMap="rolePermissionMap">
+        SELECT
+        r.id          AS role_id,
+        r.name        AS role_name,
+        r.code        AS role_code,
+        r.description AS role_description,
+        r.status      AS role_status,
+        r.create_time AS role_create_time,
+        r.update_time AS role_update_time,
+        p.id          AS perm_id,
+        p.name        AS perm_name,
+        p.code        AS perm_code,
+        p.module      AS perm_module,
+        p.description AS perm_description,
+        p.status      AS perm_status,
+        p.create_time AS perm_create_time,
+        p.update_time AS perm_update_time
+        FROM sys_role r
+        JOIN sys_user_role ur       ON ur.role_id = r.id
+        JOIN sys_role_permission rp ON rp.role_id = r.id
+        JOIN sys_permission p       ON p.id = rp.permission_id
+        WHERE ur.user_id = #{userId} AND r.deleted = 0
+        ORDER BY r.id, p.id
+    </select>
+</mapper>
