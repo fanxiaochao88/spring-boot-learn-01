@@ -57,6 +57,13 @@ public class GlobalExceptionHandler {
         return Result.fail(e.getCode(), e.getMessage());
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Result<Void> handleForbiddenException(ForbiddenException e) {
+        log.warn("权限不足,无法访问: message = {}", e.getMessage());
+        return Result.fail(e.getCode(), e.getMessage());
+    }
+
     /**
      * 处理系统异常, 作为兜底的异常处理
      * @param e

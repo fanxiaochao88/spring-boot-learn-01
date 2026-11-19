@@ -18,6 +18,8 @@ public enum ResultCode {
     TOKEN_EXPIRED(40104, "登录已过期，请重新登录"),
     ACCOUNT_DISABLED(40105, "账号已被禁用"),
 
+    PERMISSION_DENIED(40301, "没有访问该资源的权限"),
+
     // 业务错误码：1xxxx 表示商品模块
     PRODUCT_NOT_FOUND(10001, "商品不存在"),
     PRODUCT_STOCK_NOT_ENOUGH(10002, "商品库存不足"),

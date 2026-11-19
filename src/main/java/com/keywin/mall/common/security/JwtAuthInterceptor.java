@@ -79,7 +79,11 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
 
         // 存入线程内部map, 包含用户信息, 以及角色和权限信息
         UserContextHolder.setUserContext(
-                new UserContext(userId, user.getUsername(), "ADMIN", user.getTokenVersion(), roles, permissions)
+                new UserContext(userId, user.getUsername(),
+                        "ADMIN",
+                        user.getTokenVersion(),
+                        roles,
+                        permissions)
         );
 
         return true;
