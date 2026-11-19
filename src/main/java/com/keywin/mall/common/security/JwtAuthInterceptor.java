@@ -4,6 +4,7 @@ import com.keywin.mall.common.api.ResultCode;
 import com.keywin.mall.common.exception.UnauthorizedException;
 import com.keywin.mall.config.JwtProperties;
 import com.keywin.mall.modules.system.entity.SysUser;
+import com.keywin.mall.modules.system.mapper.SysPermissionMapper;
 import com.keywin.mall.modules.system.mapper.SysUserMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -17,6 +18,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.List;
 import java.util.Objects;
 
 @Component
@@ -25,6 +27,7 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final SysUserMapper sysUserMapper;
+    private final SysPermissionMapper sysPermissionMapper;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -69,9 +72,14 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
             throw new UnauthorizedException(ResultCode.TOKEN_INVALID);
         }
 
-        // 存入线程内部map
+        // 获取用户角色
+        List<String> roles = sysPermissionMapper.selectRoleCodeByUserId(userId);
+        // 获取用户权限
+        List<String> permissions = sysPermissionMapper.selectPermissionCodeByUserId(userId);
+
+        // 存入线程内部map, 包含用户信息, 以及角色和权限信息
         UserContextHolder.setUserContext(
-                new UserContext(userId, user.getUsername(), "ADMIN", user.getTokenVersion())
+                new UserContext(userId, user.getUsername(), "ADMIN", user.getTokenVersion(), roles, permissions)
         );
 
         return true;

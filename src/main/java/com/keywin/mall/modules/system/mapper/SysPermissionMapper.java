@@ -21,4 +21,8 @@ public interface SysPermissionMapper extends BaseMapper<SysPermission> {
 //    List<SysPermission> selectPermissionByRoleIds(@Param("roleIds") List<Long> roleIds);
     /** 查询用户的角色列表和对应的权限编码 */
     List<SysRoleVO> selectRolePermissionByUserId(@Param("userId") Long userId);
+
+    // 以下全是测试, 真实业务不一定需要, 主要是练习多表联合查询
+    /** 查询角色列表和对应的权限编码 */
+    List<SysRoleVO> selectRolePermission();
 }

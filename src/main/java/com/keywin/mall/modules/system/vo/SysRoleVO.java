@@ -15,7 +15,4 @@ public class SysRoleVO {
     private Integer status;
 
     private List<SysPermissionVO> permissionList;
-
-    private LocalDateTime createTime;
-    private LocalDateTime updateTime;
 }

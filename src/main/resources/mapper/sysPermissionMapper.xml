@@ -35,18 +35,13 @@
         <result property="code"        column="role_code"/>
         <result property="description" column="role_description"/>
         <result property="status"      column="role_status"/>
-        <result property="createTime"  column="role_create_time"/>
-        <result property="updateTime"  column="role_update_time"/>
 
         <collection property="permissionList" ofType="com.keywin.mall.modules.system.vo.SysPermissionVO">
-            <id     property="id"          column="perm_id"/>
-            <result property="name"        column="perm_name"/>
-            <result property="code"        column="perm_code"/>
-            <result property="module"      column="perm_module"/>
-            <result property="description" column="perm_description"/>
-            <result property="status"      column="perm_status"/>
-            <result property="createTime"  column="perm_create_time"/>
-            <result property="updateTime"  column="perm_update_time"/>
+            <id     property="id"          column="permission_id"/>
+            <result property="name"        column="permission_name"/>
+            <result property="code"        column="permission_code"/>
+            <result property="description" column="permission_description"/>
+            <result property="status"      column="permission_status"/>
         </collection>
     </resultMap>
     <select id="selectRolePermissionByUserId" resultMap="rolePermissionMap">
@@ -72,5 +67,26 @@
         JOIN sys_permission p       ON p.id = rp.permission_id
         WHERE ur.user_id = #{userId} AND r.deleted = 0
         ORDER BY r.id, p.id
+    </select>
+    <!--  查询角色列表和每个角色包含的权限  -->
+    <select id="selectRolePermission" resultMap="rolePermissionMap">
+        SELECT
+        sys_role.id as role_id,
+        sys_role.name as role_name,
+        sys_role.code as role_code,
+        sys_role.description as role_description,
+        sys_role.status as role_status,
+
+        sys_permission.id as permission_id,
+        sys_permission.name as permission_name,
+        sys_permission.code as permission_code,
+        sys_permission.description as permission_description,
+        sys_permission.status as permission_status
+
+        FROM sys_role
+        LEFT join sys_role_permission on sys_role_permission.role_id = sys_role.id
+        left join sys_permission on sys_permission.id = sys_role_permission.permission_id and sys_permission.status = 1 and sys_permission.deleted = 0
+        WHERE sys_role.deleted = 0
+        ORDER BY sys_role.id, sys_permission.id
     </select>
 </mapper>

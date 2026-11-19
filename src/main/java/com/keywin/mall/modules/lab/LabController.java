@@ -29,9 +29,13 @@ public class LabController {
         throw new BusinessException(ResultCode.PRODUCT_NOT_FOUND);
     }
 
-    @GetMapping("test")
+    /**
+     * 测试mybatis, 查询角色列表以及每个角色的权限列表
+     * @return
+     */
+    @GetMapping("test1")
     public List<SysRoleVO> test() {
-        return sysPermissionMapper.selectRolePermissionByUserId(1L);
+        return sysPermissionMapper.selectRolePermission();
     }
 
     @GetMapping("exception")
