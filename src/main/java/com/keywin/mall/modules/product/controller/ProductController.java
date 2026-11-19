@@ -2,6 +2,7 @@ package com.keywin.mall.modules.product.controller;
 
 import com.keywin.mall.common.api.PageResult;
 import com.keywin.mall.common.api.Result;
+import com.keywin.mall.common.security.RequirePermission;
 import com.keywin.mall.modules.product.dto.ProductCreateDTO;
 import com.keywin.mall.modules.product.dto.ProductQueryDTO;
 import com.keywin.mall.modules.product.dto.ProductUpdateDTO;
@@ -27,6 +28,7 @@ public class ProductController {
      * @return
      */
     @PostMapping
+    @RequirePermission("product:write")
     public Result<ProductVO> create(@Valid @RequestBody ProductCreateDTO productCreateDTO) {
         return Result.success(productService.create(productCreateDTO));
     }
@@ -37,6 +39,7 @@ public class ProductController {
      * @return
      */
     @GetMapping("/{id}")
+    @RequirePermission("product:read")
     public Result<ProductVO> get(@PathVariable Long id) {
         return Result.success(productService.getById(id));
     }
