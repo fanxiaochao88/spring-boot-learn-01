@@ -48,6 +48,7 @@ public class ProductController {
      * 分页查询
      */
     @GetMapping
+    @RequirePermission("product:read")
     public Result<PageResult<ProductVO>> page(@Valid ProductQueryDTO productQueryDTO) {
         return Result.success(productService.page(productQueryDTO));
     }
@@ -56,6 +57,7 @@ public class ProductController {
      * 根据id修改
      */
     @PutMapping("/{id}")
+    @RequirePermission("product:write")
     public Result<ProductVO> update(@PathVariable Long id,
                                     @Valid @RequestBody ProductUpdateDTO productUpdateDTO) {
         return Result.success(productService.update(id, productUpdateDTO));
@@ -65,6 +67,7 @@ public class ProductController {
      * 根据id删除
      */
     @DeleteMapping("/{id}")
+    @RequirePermission("product:write")
     public Result<Void> delete(@PathVariable Long id) {
         productService.delete(id);
         return Result.success();
@@ -74,6 +77,7 @@ public class ProductController {
      * 扣减库存
      */
     @PostMapping("/{id}/stock/decrease")
+    @RequirePermission("product:write")
     public Result<Void> decreaseStock(@PathVariable Long id,
                                       @Valid @RequestBody StockDecreaseDTO stockDecreaseDTO) {
         stockLogService.decrease(id, stockDecreaseDTO.getCount(), stockDecreaseDTO.getReason());
