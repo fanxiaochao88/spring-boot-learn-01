@@ -1,0 +1,255 @@
+### ============================================================
+### security-lab 接口验收脚本
+### 推荐用 IntelliJ IDEA 打开：点击每个请求左侧的 ▶ 运行
+### 脚本会自动把登录返回的 token 存进变量，后续请求直接复用
+###
+### 如果你用 VS Code REST Client：
+### 把下面三个登录请求的返回值里的 token 手动复制到变量里再运行。
+### ============================================================
+
+@host = http://localhost:8080
+
+### 1. 健康检查（公开）
+GET {{host}}/api/ping
+
+### 2. 登录：admin
+# @name loginAdmin
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+> {%
+    client.test("admin 登录成功", function () {
+        client.assert(response.status === 200, "期望 200，实际 " + response.status);
+        client.assert(response.body.data.token, "没有拿到 token");
+    });
+    client.global.set("adminToken", response.body.data.token);
+%}
+
+### 3. 登录：user_admin
+# @name loginUserAdmin
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "user_admin",
+  "password": "user123"
+}
+
+> {%
+    client.global.set("userAdminToken", response.body.data.token);
+%}
+
+### 4. 登录：viewer
+# @name loginViewer
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "viewer",
+  "password": "viewer123"
+}
+
+> {%
+    client.global.set("viewerToken", response.body.data.token);
+%}
+
+### 5. 当前用户（admin）——预期 200
+GET {{host}}/api/auth/me
+Authorization: Bearer {{adminToken}}
+
+### 6. 不带 Token 访问用户列表——预期 401
+GET {{host}}/api/users
+
+### 7. viewer 查询用户列表——预期 200
+GET {{host}}/api/users?page=1&size=10
+Authorization: Bearer {{viewerToken}}
+
+### 8. viewer 新增用户——预期 403
+POST {{host}}/api/users
+Authorization: Bearer {{viewerToken}}
+Content-Type: application/json
+
+{
+  "username": "should_fail",
+  "password": "123456",
+  "nickname": "不该创建成功",
+  "status": 1
+}
+
+### 9. admin 新增用户——预期 200
+# @name createUser
+POST {{host}}/api/users
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "username": "test_user",
+  "password": "test123",
+  "nickname": "测试用户",
+  "phone": "13900000000",
+  "email": "test_user@example.com",
+  "status": 1
+}
+
+> {%
+    client.global.set("newUserId", response.body.data);
+%}
+
+### 10. 查询刚创建的用户——预期 200
+GET {{host}}/api/users/{{newUserId}}
+Authorization: Bearer {{adminToken}}
+
+### 11. 修改刚创建的用户——预期 200
+PUT {{host}}/api/users/{{newUserId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "nickname": "测试用户-已修改",
+  "phone": "13900000001",
+  "email": "test_user_updated@example.com",
+  "status": 1
+}
+
+### 12. 查询用户的角色 ID——预期 200，data 为空数组
+GET {{host}}/api/users/{{newUserId}}/roles
+Authorization: Bearer {{adminToken}}
+
+### 13. 给新用户分配 VIEWER 角色（roleId=3）——预期 200
+PUT {{host}}/api/users/{{newUserId}}/roles
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "roleIds": [3]
+}
+
+### 14. 再查用户角色——预期 [3]
+GET {{host}}/api/users/{{newUserId}}/roles
+Authorization: Bearer {{adminToken}}
+
+### 15. 角色列表——预期 200
+GET {{host}}/api/roles
+Authorization: Bearer {{adminToken}}
+
+### 16. 新增角色——预期 200
+# @name createRole
+POST {{host}}/api/roles
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "code": "TEST_ROLE",
+  "name": "测试角色",
+  "description": "只用于验收",
+  "status": 1
+}
+
+> {%
+    client.global.set("newRoleId", response.body.data);
+%}
+
+### 17. 查询角色权限 ID——预期 200，data 为空数组
+GET {{host}}/api/roles/{{newRoleId}}/permissions
+Authorization: Bearer {{adminToken}}
+
+### 18. 给新角色分配 user:list、role:list（permissionId=1、5）——预期 200
+PUT {{host}}/api/roles/{{newRoleId}}/permissions
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "permissionIds": [1, 5]
+}
+
+### 19. 权限列表——预期 200
+GET {{host}}/api/permissions
+Authorization: Bearer {{adminToken}}
+
+### 20. 新增权限——预期 200
+# @name createPermission
+POST {{host}}/api/permissions
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "code": "test:demo",
+  "name": "测试权限",
+  "module": "test",
+  "description": "只用于验收",
+  "status": 1
+}
+
+> {%
+    client.global.set("newPermissionId", response.body.data);
+%}
+
+### 21. 修改权限——预期 200
+PUT {{host}}/api/permissions/{{newPermissionId}}
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "name": "测试权限-已修改",
+  "module": "test",
+  "description": "只用于验收",
+  "status": 1
+}
+
+### 22. 公开示例——预期 200
+GET {{host}}/api/demo/public
+
+### 23. 当前用户示例——预期 200，返回用户名、角色、权限
+GET {{host}}/api/demo/me
+Authorization: Bearer {{viewerToken}}
+
+### 24. 管理员示例：admin——预期 200
+GET {{host}}/api/admin/demo
+Authorization: Bearer {{adminToken}}
+
+### 25. 管理员示例：viewer——预期 403
+GET {{host}}/api/admin/demo
+Authorization: Bearer {{viewerToken}}
+
+### 26. 退出登录——预期 200
+POST {{host}}/api/auth/logout
+Authorization: Bearer {{adminToken}}
+
+### 27. 退出后旧 Token 访问——预期 401
+GET {{host}}/api/auth/me
+Authorization: Bearer {{adminToken}}
+
+### 28. 重新登录后新 Token 访问——预期 200
+# @name reloginAdmin
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+> {%
+    client.global.set("adminToken2", response.body.data.token);
+%}
+
+### 29. 新 Token 访问——预期 200
+GET {{host}}/api/auth/me
+Authorization: Bearer {{adminToken2}}
+
+### 30. 删除验收数据：用户、角色、权限——预期都是 200
+DELETE {{host}}/api/users/{{newUserId}}
+Authorization: Bearer {{adminToken2}}
+
+### 31. 删除角色
+DELETE {{host}}/api/roles/{{newRoleId}}
+Authorization: Bearer {{adminToken2}}
+
+### 32. 删除权限
+DELETE {{host}}/api/permissions/{{newPermissionId}}
+Authorization: Bearer {{adminToken2}}
